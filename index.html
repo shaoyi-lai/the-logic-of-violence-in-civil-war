@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="An interactive teaching lab for the Chapter 7 model in Stathis Kalyvas's The Logic of Violence in Civil War.">
+  <title>Control &amp; Violence Lab — Kalyvas Chapter 7</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to model</a>
+
+  <header class="masthead">
+    <div class="masthead__eyebrow">THEORY EXPLORER · CHAPTER 7</div>
+    <div class="masthead__grid">
+      <div>
+        <h1>Control <span>&amp;</span> Violence Lab</h1>
+        <p class="lede">Explore how territorial control shapes defection, denunciation, and selective violence in Kalyvas’s five-zone model.</p>
+      </div>
+      <aside class="source-card" aria-label="Source and scope">
+        <strong>Stathis N. Kalyvas</strong>
+        <span><em>The Logic of Violence in Civil War</em> (2006)</span>
+        <span>Chapter 7, pp. 173–209</span>
+      </aside>
+    </div>
+    <div class="disclaimer">
+      <span aria-hidden="true">◎</span>
+      <strong>This is a theory explorer, not an empirical risk calculator.</strong>
+      <span>Faithful mode shows ordinal predictions. Continuous curves are transparent visualization assumptions.</span>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="overview section-shell" aria-labelledby="overview-title">
+      <div class="section-kicker">START HERE</div>
+      <div class="section-heading-row">
+        <div>
+          <h2 id="overview-title">Choose a control zone</h2>
+          <p>Organization A represents incumbents; Organization B represents insurgents.</p>
+        </div>
+        <div class="mode-switch" role="group" aria-label="Model mode">
+          <button class="mode-button is-active" id="faithfulMode" type="button" aria-pressed="true">Faithful</button>
+          <button class="mode-button" id="exploreMode" type="button" aria-pressed="false">Explore</button>
+        </div>
+      </div>
+
+      <div class="zone-selector" role="radiogroup" aria-label="Five control zones">
+        <button class="zone-button" type="button" role="radio" aria-checked="false" data-zone="1">
+          <span class="zone-number">1</span>
+          <span class="zone-name">Total A control</span>
+          <span class="zone-note">Incumbent monopoly</span>
+        </button>
+        <button class="zone-button" type="button" role="radio" aria-checked="false" data-zone="2">
+          <span class="zone-number">2</span>
+          <span class="zone-name">A dominance</span>
+          <span class="zone-note">Incumbent advantage</span>
+        </button>
+        <button class="zone-button is-active" type="button" role="radio" aria-checked="true" data-zone="3">
+          <span class="zone-number">3</span>
+          <span class="zone-name">Parity</span>
+          <span class="zone-note">Fragmented control</span>
+        </button>
+        <button class="zone-button" type="button" role="radio" aria-checked="false" data-zone="4">
+          <span class="zone-number">4</span>
+          <span class="zone-name">B dominance</span>
+          <span class="zone-note">Insurgent advantage</span>
+        </button>
+        <button class="zone-button" type="button" role="radio" aria-checked="false" data-zone="5">
+          <span class="zone-number">5</span>
+          <span class="zone-name">Total B control</span>
+          <span class="zone-note">Insurgent monopoly</span>
+        </button>
+      </div>
+
+      <div class="status-grid" aria-label="Current model outputs">
+        <article class="status-card">
+          <span class="status-label">CONTROL</span>
+          <strong id="zoneStatus">Zone 3 · parity</strong>
+          <span id="controlStatus">rᴬ = 0.50 · rᴮ = 0.50</span>
+        </article>
+        <article class="status-card">
+          <span class="status-label">DEFECTION</span>
+          <strong id="defectionStatus">High toward both sides</strong>
+          <span id="defectionDetail">Control cannot reliably deter collaboration with either rival.</span>
+        </article>
+        <article class="status-card">
+          <span class="status-label">DENUNCIATION</span>
+          <strong id="equilibriumStatus">(N,N) · mutual non-denunciation</strong>
+          <span id="equilibriumDetail">Counterdenunciation is credible on both sides.</span>
+        </article>
+        <article class="status-card status-card--accent">
+          <span class="status-label">SELECTIVE VIOLENCE</span>
+          <strong id="violenceStatus">Low for both actors</strong>
+          <span id="violenceDetail">The demand for information is high, but safe denunciation is scarce.</span>
+        </article>
+      </div>
+      <p class="live-summary" id="liveSummary" aria-live="polite"></p>
+    </section>
+
+    <section class="model section-shell" aria-labelledby="model-title">
+      <div class="section-kicker">THE THREE CALCULI</div>
+      <div class="section-heading-row">
+        <div>
+          <h2 id="model-title">Move through the model</h2>
+          <p>Keep the decisions separate: civilians may defect without denouncing, and organizations may want violence without having usable information.</p>
+        </div>
+        <button class="secondary-button" id="resetButton" type="button">Reset to book example</button>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Model stages">
+        <button id="tabDefection" class="tab is-active" role="tab" aria-selected="true" aria-controls="panelDefection" type="button" data-panel="defection">
+          <span>01</span> Defection
+        </button>
+        <button id="tabDenunciation" class="tab" role="tab" aria-selected="false" aria-controls="panelDenunciation" type="button" data-panel="denunciation">
+          <span>02</span> Denunciation
+        </button>
+        <button id="tabViolence" class="tab" role="tab" aria-selected="false" aria-controls="panelViolence" type="button" data-panel="violence">
+          <span>03</span> Organizational violence
+        </button>
+      </div>
+
+      <section class="tab-panel" id="panelDefection" role="tabpanel" aria-labelledby="tabDefection">
+        <div class="panel-grid">
+          <div class="control-panel">
+            <h3>Individual calculus of defection</h3>
+            <p class="formula">Defection is deterred when <strong>p·u &gt; (1−p)·i</strong></p>
+
+            <div class="control-group">
+              <label for="iSlider"><span><em>i</em> · payoff from defection</span><output id="iOutput">33</output></label>
+              <input id="iSlider" type="range" min="0" max="150" value="33" step="1">
+            </div>
+            <div class="control-group">
+              <label for="uSlider"><span><em>u</em> · cost if caught</span><output id="uOutput">100</output></label>
+              <input id="uSlider" type="range" min="1" max="200" value="100" step="1">
+            </div>
+
+            <div class="subsection-heading">
+              <strong>Capture probabilities <em>p</em></strong>
+              <span>Direct detection or denunciation followed by capture</span>
+            </div>
+            <label class="check-row">
+              <input id="linkCatch" type="checkbox" checked>
+              <span>Link <em>p</em> to each organization’s control</span>
+            </label>
+            <div class="control-group compact-control">
+              <label for="pCatchA"><span><em>pᴬ</em><sub>catch</sub> · caught by A</span><output id="pCatchAOutput">0.50</output></label>
+              <input id="pCatchA" type="range" min="0" max="1" value="0.5" step="0.01" disabled>
+            </div>
+            <div class="control-group compact-control">
+              <label for="pCatchB"><span><em>pᴮ</em><sub>catch</sub> · caught by B</span><output id="pCatchBOutput">0.50</output></label>
+              <input id="pCatchB" type="range" min="0" max="1" value="0.5" step="0.01" disabled>
+            </div>
+
+            <div class="warning" id="defectionWarning" hidden></div>
+          </div>
+
+          <div class="visual-panel">
+            <div class="visual-heading">
+              <div>
+                <span class="mini-kicker">LIVE COMPARISON</span>
+                <h3>Expected benefit and cost</h3>
+              </div>
+              <span class="source-chip">pp. 196–200</span>
+            </div>
+            <div class="defection-comparison">
+              <article class="actor-result actor-a">
+                <span class="actor-tag">DEFECT TOWARD B</span>
+                <h4>Risk of capture by A</h4>
+                <div class="equation-row"><span>Expected benefit</span><strong id="benefitToB">16.50</strong></div>
+                <div class="meter"><span id="benefitToBBar"></span></div>
+                <div class="equation-row"><span>Expected cost</span><strong id="costToB">50.00</strong></div>
+                <div class="meter meter--cost"><span id="costToBBar"></span></div>
+                <div class="decision-pill" id="decisionToB">Deterred</div>
+              </article>
+              <article class="actor-result actor-b">
+                <span class="actor-tag">DEFECT TOWARD A</span>
+                <h4>Risk of capture by B</h4>
+                <div class="equation-row"><span>Expected benefit</span><strong id="benefitToA">16.50</strong></div>
+                <div class="meter"><span id="benefitToABar"></span></div>
+                <div class="equation-row"><span>Expected cost</span><strong id="costToA">50.00</strong></div>
+                <div class="meter meter--cost"><span id="costToABar"></span></div>
+                <div class="decision-pill" id="decisionToA">Deterred</div>
+              </article>
+            </div>
+            <div class="threshold-card">
+              <span>Capture threshold</span>
+              <strong>p* = i ÷ (i + u) = <span id="pThreshold">0.25</span></strong>
+              <p>Below this threshold, defection is individually attractive. Chapter 7 specifies that <em>k(c)</em> falls as control rises, but not the exact curve or number of defectors.</p>
+              <div class="k-readout" aria-label="Ordinal k of c readout">
+                <span><em>cᴬ = rᴬ</em> · <em>kᴬ(c)</em>, defection toward B</span><strong id="kAStatus">High</strong>
+                <span><em>cᴮ = rᴮ</em> · <em>kᴮ(c)</em>, defection toward A</span><strong id="kBStatus">High</strong>
+              </div>
+              <p>Here, the generic control variable <em>c</em> is represented by each actor’s <em>r</em>. The <em>k(c)</em> readouts are ordinal, not estimated counts.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-panel" id="panelDenunciation" role="tabpanel" aria-labelledby="tabDenunciation" hidden>
+        <div class="panel-grid">
+          <div class="control-panel">
+            <h3>Individual calculus of denunciation</h3>
+            <p>Villager A is associated with Organization A; Villager B with Organization B.</p>
+
+            <div class="control-group">
+              <label for="xSlider"><span><em>x</em> · benefit from eliminating a rival</span><output id="xOutput">33</output></label>
+              <input id="xSlider" type="range" min="0" max="150" value="33" step="1">
+            </div>
+            <div class="control-group">
+              <label for="ySlider"><span><em>y</em> · cost of retaliation/death</span><output id="yOutput">100</output></label>
+              <input id="ySlider" type="range" min="1" max="200" value="100" step="1">
+            </div>
+            <div class="control-group compact-control">
+              <label for="pASlider"><span><em>pᴬ</em> · A implements denunciation successfully</span><output id="pAOutput">0.85</output></label>
+              <input id="pASlider" type="range" min="0" max="1" value="0.85" step="0.01">
+            </div>
+            <div class="control-group compact-control">
+              <label for="pBSlider"><span><em>pᴮ</em> · B implements denunciation successfully</span><output id="pBOutput">0.85</output></label>
+              <input id="pBSlider" type="range" min="0" max="1" value="0.85" step="0.01">
+            </div>
+
+            <div class="subsection-heading">
+              <strong>Control and shielding</strong>
+              <span><em>rᴬ</em>, <em>rᴮ</em> reduce retaliation by the rival side</span>
+            </div>
+            <label class="check-row">
+              <input id="independentControl" type="checkbox">
+              <span>Explore <em>rᴬ</em> and <em>rᴮ</em> independently</span>
+            </label>
+            <div class="control-group compact-control">
+              <label for="rASlider"><span><em>rᴬ</em> · A’s control/shielding</span><output id="rAOutput">0.50</output></label>
+              <input id="rASlider" type="range" min="0" max="1" value="0.5" step="0.01" disabled>
+            </div>
+            <div class="control-group compact-control">
+              <label for="rBSlider"><span><em>rᴮ</em> · B’s control/shielding</span><output id="rBOutput">0.50</output></label>
+              <input id="rBSlider" type="range" min="0" max="1" value="0.5" step="0.01" disabled>
+            </div>
+
+            <label class="check-row">
+              <input id="overrideQ" type="checkbox">
+              <span>Override the illustrative <em>q(r)</em> functions</span>
+            </label>
+            <div class="control-group compact-control">
+              <label for="qASlider"><span><em>qᴬ(rᴮ)</em> · retaliation by A’s family</span><output id="qAOutput">0.50</output></label>
+              <input id="qASlider" type="range" min="0" max="1" value="0.5" step="0.01" disabled>
+            </div>
+            <div class="control-group compact-control">
+              <label for="qBSlider"><span><em>qᴮ(rᴬ)</em> · retaliation by B’s family</span><output id="qBOutput">0.50</output></label>
+              <input id="qBSlider" type="range" min="0" max="1" value="0.5" step="0.01" disabled>
+            </div>
+
+            <details class="implementation-details">
+              <summary>Visualization assumption</summary>
+              <div class="control-group compact-control">
+                <label for="qSteepness"><span>Illustrative <em>q(r)</em> steepness</span><output id="qSteepnessOutput">14</output></label>
+                <input id="qSteepness" type="range" min="2" max="28" value="14" step="1">
+              </div>
+              <p>Kalyvas specifies that <em>q</em> decreases with shielding control but does not give a functional form. This explorer uses a symmetric logistic curve only to make the relationship visible.</p>
+            </details>
+            <div class="warning" id="denunciationWarning" hidden></div>
+          </div>
+
+          <div class="visual-panel">
+            <div class="visual-heading">
+              <div>
+                <span class="mini-kicker">TWO-PLAYER GAME</span>
+                <h3>Denunciation equilibrium</h3>
+              </div>
+              <span class="source-chip">pp. 197–202</span>
+            </div>
+            <div class="ratio-band">
+              <span><em>x/y</em></span>
+              <strong id="xyRatio">0.33</strong>
+              <span>compared with</span>
+              <strong id="qComparison">qᴬ = 0.50 · qᴮ = 0.50</strong>
+            </div>
+            <div class="equilibrium-banner" id="equilibriumBanner">
+              <span>CURRENT EQUILIBRIUM</span>
+              <strong>(N,N)</strong>
+              <p>Neither villager denounces; the expected retaliation risk exceeds the private benefit.</p>
+            </div>
+
+            <div class="matrix-wrap">
+              <table class="payoff-matrix" aria-label="Symmetry-consistent expected payoff matrix">
+                <caption>Symmetry-consistent payoff reconstruction</caption>
+                <thead>
+                  <tr><th scope="col">A \ B</th><th scope="col">B: Denounce</th><th scope="col">B: Do not</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">A: Denounce</th>
+                    <td id="cellDD"><strong>(D,D)</strong><span id="payoffDD">A: −28.5 · B: −28.5</span></td>
+                    <td id="cellDN"><strong>(D,N)</strong><span id="payoffDN">A: −14.5 · B: −71.0</span></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">A: Do not</th>
+                    <td id="cellND"><strong>(N,D)</strong><span id="payoffND">A: −71.0 · B: −14.5</span></td>
+                    <td id="cellNN" class="is-equilibrium"><strong>(N,N)</strong><span>A: 0 · B: 0</span></td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="matrix-note">The printed payoff table on p. 201 contains inconsistent probability superscripts. Numeric payoffs here use the game’s symmetry; equilibrium labels use the book’s stated primitive inequalities.</p>
+            </div>
+
+            <svg class="equilibrium-map" id="equilibriumMap" viewBox="0 0 520 320" role="img" aria-labelledby="mapTitle mapDesc">
+              <title id="mapTitle">Illustrative denunciation equilibrium map</title>
+              <desc id="mapDesc">A map of organization A and B control with the current point marked.</desc>
+              <rect x="58" y="24" width="420" height="240" rx="8" class="map-bg"></rect>
+              <g id="mapRegions" aria-hidden="true"></g>
+              <text x="78" y="58" class="map-label">A denounces</text>
+              <text x="78" y="76" class="map-label">B does not</text>
+              <text x="346" y="220" class="map-label">B denounces</text>
+              <text x="346" y="238" class="map-label">A does not</text>
+              <text x="215" y="135" class="map-label map-label--center">mutual non-denunciation</text>
+              <circle id="mapPoint" cx="268" cy="144" r="9" class="map-point"></circle>
+              <line x1="58" y1="264" x2="478" y2="264" class="axis"></line>
+              <line x1="58" y1="264" x2="58" y2="24" class="axis"></line>
+              <text x="238" y="304" class="axis-label">Organization B control, rᴮ →</text>
+              <text transform="translate(18 220) rotate(-90)" class="axis-label">Organization A control, rᴬ →</text>
+            </svg>
+            <p class="matrix-note">Region colors are recalculated from <em>x/y</em> and the current illustrative <em>q(r)</em> function. They are not empirical probabilities.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-panel" id="panelViolence" role="tabpanel" aria-labelledby="tabViolence" hidden>
+        <div class="panel-grid">
+          <div class="control-panel">
+            <h3>Organizational calculus of violence</h3>
+            <p class="formula">Use violence when <strong>b &gt; v</strong>; refrain when <strong>b &lt; v</strong>.</p>
+
+            <div class="actor-controls actor-controls--a">
+              <h4>Organization A · incumbent</h4>
+              <div class="control-group compact-control">
+                <label for="bASlider"><span><em>bᴬ</em> · benefit of violence</span><output id="bAOutput">60</output></label>
+                <input id="bASlider" type="range" min="0" max="100" value="60" step="1">
+              </div>
+              <div class="control-group compact-control">
+                <label for="vASlider"><span><em>vᴬ</em> · backfire/alienation cost</span><output id="vAOutput">40</output></label>
+                <input id="vASlider" type="range" min="0" max="100" value="40" step="1">
+              </div>
+            </div>
+            <div class="actor-controls actor-controls--b">
+              <h4>Organization B · insurgent</h4>
+              <div class="control-group compact-control">
+                <label for="bBSlider"><span><em>bᴮ</em> · benefit of violence</span><output id="bBOutput">60</output></label>
+                <input id="bBSlider" type="range" min="0" max="100" value="60" step="1">
+              </div>
+              <div class="control-group compact-control">
+                <label for="vBSlider"><span><em>vᴮ</em> · backfire/alienation cost</span><output id="vBOutput">40</output></label>
+                <input id="vBSlider" type="range" min="0" max="100" value="40" step="1">
+              </div>
+            </div>
+
+            <label class="select-row" for="informationMode">
+              <span>Available information</span>
+              <select id="informationMode">
+                <option value="model">Follow current control and equilibrium</option>
+                <option value="monitoring">Direct monitoring</option>
+                <option value="denunciation">Credible denunciation</option>
+                <option value="false">Known systematically false denunciations</option>
+                <option value="none">No usable information</option>
+              </select>
+            </label>
+            <div class="warning" id="violenceWarning" hidden></div>
+          </div>
+
+          <div class="visual-panel">
+            <div class="visual-heading">
+              <div>
+                <span class="mini-kicker">ORGANIZATIONAL DECISION</span>
+                <h3>Incentive is not enough</h3>
+              </div>
+              <span class="source-chip">pp. 202–205</span>
+            </div>
+            <div class="organization-results">
+              <article class="organization-card organization-card--a">
+                <div class="organization-card__head"><span>A</span><strong id="orgADecision">Wants violence</strong></div>
+                <div class="balance-bar"><span id="orgABalance"></span><i></i></div>
+                <p id="orgAReason">bᴬ exceeds vᴬ, but selective violence still requires targets and usable information.</p>
+                <div class="outcome-tag" id="orgAOutcome">No selective violence predicted</div>
+              </article>
+              <article class="organization-card organization-card--b">
+                <div class="organization-card__head"><span>B</span><strong id="orgBDecision">Wants violence</strong></div>
+                <div class="balance-bar"><span id="orgBBalance"></span><i></i></div>
+                <p id="orgBReason">bᴮ exceeds vᴮ, but selective violence still requires targets and usable information.</p>
+                <div class="outcome-tag" id="orgBOutcome">No selective violence predicted</div>
+              </article>
+            </div>
+            <div class="logic-chain" aria-label="Causal sequence">
+              <div><strong>Control</strong><span>protection &amp; monitoring</span></div>
+              <b aria-hidden="true">→</b>
+              <div><strong>Collaboration</strong><span>defection problem</span></div>
+              <b aria-hidden="true">→</b>
+              <div><strong>Information</strong><span>denunciation or monitoring</span></div>
+              <b aria-hidden="true">→</b>
+              <div><strong>Violence</strong><span>only if b &gt; v</span></div>
+            </div>
+            <div class="interpretation-card" id="violenceInterpretation">
+              <strong>Zone 3 baseline</strong>
+              <p>Both organizations face defection, yet neither side can safely obtain denunciations. The model therefore predicts little selective homicidal violence—not literal peace.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section class="patterns section-shell" aria-labelledby="patterns-title">
+      <div class="section-kicker">FIGURE 7.7, REBUILT</div>
+      <div class="section-heading-row">
+        <div>
+          <h2 id="patterns-title">Predicted pattern across five zones</h2>
+          <p>The curves reproduce Figure 7.7’s qualitative shapes. Their heights are ordinal—not estimated probabilities or counts.</p>
+        </div>
+        <div class="legend pattern-legend" aria-label="Chart legend">
+          <span class="legend-def-a">Defection toward A</span>
+          <span class="legend-def-b">Defection toward B</span>
+          <span class="legend-n">Denunciations</span>
+          <span class="legend-a">A selective violence</span>
+          <span class="legend-b">B selective violence</span>
+        </div>
+      </div>
+      <div class="pattern-chart" id="patternChart"></div>
+      <div class="chart-table-wrap">
+        <table class="chart-table">
+          <thead><tr><th>Zone</th><th>Defection toward A</th><th>Defection toward B</th><th>Denunciation equilibrium</th><th>Selective violence</th></tr></thead>
+          <tbody id="patternTableBody"></tbody>
+        </table>
+      </div>
+      <p class="chart-caveat"><strong>Do not read “low selective violence” as benevolence.</strong> Under full control, the dominant organization has fewer meaningful defectors; under parity, retaliation suppresses denunciation. The weak actor’s violence, if it occurs, is more likely indiscriminate—a Chapter 6-informed conjecture carried into Chapter 7.</p>
+    </section>
+
+    <section class="dynamic section-shell" aria-labelledby="dynamic-title">
+      <div class="section-kicker">OPTIONAL EXTENSION</div>
+      <div class="section-heading-row">
+        <div>
+          <h2 id="dynamic-title">From <em>t₀</em> to <em>t₁</em></h2>
+          <p>Chapter 7 describes feedback but supplies no transition equation. This panel makes that limitation explicit.</p>
+        </div>
+        <span class="assumption-chip">ILLUSTRATIVE · NOT IN THE BOOK</span>
+      </div>
+      <div class="dynamic-grid">
+        <div class="control-panel dynamic-controls">
+          <div class="control-group compact-control">
+            <label for="militaryShock"><span>Exogenous military-resource shock toward A</span><output id="militaryShockOutput">0.00</output></label>
+            <input id="militaryShock" type="range" min="-0.4" max="0.4" value="0" step="0.01">
+          </div>
+          <div class="control-group compact-control">
+            <label for="feedbackStrength"><span>Selective-violence collaboration feedback</span><output id="feedbackStrengthOutput">0.10</output></label>
+            <input id="feedbackStrength" type="range" min="0" max="0.3" value="0.1" step="0.01">
+          </div>
+          <p class="small-note">A positive shock favors A; a negative shock favors B. The feedback term moves control only when the current model predicts selective violence by that actor.</p>
+        </div>
+        <div class="timeline-card">
+          <div class="time-state"><span>t₀</span><strong id="t0State">rᴬ 0.50 · rᴮ 0.50</strong><small>Initial control is exogenous in the baseline.</small></div>
+          <div class="time-arrow" aria-hidden="true">→</div>
+          <div class="time-state time-state--future"><span>t₁</span><strong id="t1State">rᴬ 0.50 · rᴮ 0.50</strong><small id="t1Note">No modeled shift under the current settings.</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="assumptions section-shell" aria-labelledby="assumptions-title">
+      <div class="section-kicker">MODEL BOUNDARIES</div>
+      <div class="section-heading-row">
+        <div>
+          <h2 id="assumptions-title">Variables, assumptions, and scope</h2>
+          <p>Everything introduced in the Chapter 7 formal model is listed here; implementation additions are marked separately.</p>
+        </div>
+      </div>
+      <div class="assumption-grid">
+        <details open>
+          <summary>Formal variables</summary>
+          <dl class="variable-list">
+            <div><dt>c</dt><dd>actor’s territorial control</dd></div>
+            <div><dt>k(c)</dt><dd>number/likelihood of defectors; decreasing in own control</dd></div>
+            <div><dt>i, u, p</dt><dd>defection payoff, cost if caught, and capture probability</dd></div>
+            <div><dt>rᴬ, rᴮ</dt><dd>control and capacity to shield collaborators</dd></div>
+            <div><dt>D, N</dt><dd>denounce or do not denounce</dd></div>
+            <div><dt>pᴬ, pᴮ</dt><dd>successful implementation of a denunciation</dd></div>
+            <div><dt>x, y</dt><dd>benefit from eliminating a rival and retaliation cost</dd></div>
+            <div><dt>qᴬ(rᴮ), qᴮ(rᴬ)</dt><dd>counterdenunciation probabilities</dd></div>
+            <div><dt>Pᴬ, Pᴮ</dt><dd>players’ expected payoffs</dd></div>
+            <div><dt>b, v</dt><dd>organizational benefit and backfire/alienation cost of violence</dd></div>
+            <div><dt>t₀, t₁</dt><dd>initial and subsequent control states</dd></div>
+          </dl>
+        </details>
+        <details>
+          <summary>Baseline assumptions</summary>
+          <ul>
+            <li>Two armed organizations; no ungoverned vacuum when one leaves.</li>
+            <li>Actors maximize territorial control; initial control and military allocation are exogenous.</li>
+            <li>Civilians are boundedly rational, survival-sensitive, and perceive current control as stable.</li>
+            <li>Denunciations are local, visible to the victim’s family, and sent only to the villager’s associated organization.</li>
+            <li>Motives may be political or private; x and y are constant in the baseline.</li>
+            <li>u &gt; i and y &gt; x; violence production costs decrease with control.</li>
+            <li>The model predicts location, selectivity, and likely perpetrator—not timing or intensity.</li>
+          </ul>
+        </details>
+        <details>
+          <summary>Implementation assumptions</summary>
+          <ul>
+            <li>The logistic shape and steepness of q(r) are visualization choices.</li>
+            <li>Continuous interpolation between zones is illustrative.</li>
+            <li>Numeric payoffs use a symmetry-consistent reconstruction of p. 201.</li>
+            <li>The t₀→t₁ update is a teaching extension, not Kalyvas’s equation.</li>
+            <li>No output is an empirical probability, forecast, or causal estimate.</li>
+          </ul>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>
+      <strong>Control &amp; Violence Lab</strong>
+      <span>Built as a transparent teaching aid for Chapter 7.</span>
+    </div>
+    <p>Kalyvas, Stathis N. 2006. <em>The Logic of Violence in Civil War.</em> Cambridge University Press.</p>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
